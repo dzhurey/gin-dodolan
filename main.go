@@ -1,20 +1,23 @@
 package main
 
 import (
+	"os"
+
+	"gin-dodolan/api"
+
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
-var Router *gin.Engine
-
 func main() {
-	Router = gin.Default()
-	api := Router.Group("/api/v1")
-	{
-		api.GET("/test", func(ctx *gin.Context) {
-			ctx.JSON(200, gin.H{
-				"message": "test successful",
-			})
-		})
+	// load .env environment variables
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
 	}
-	Router.Run(":5000")
+
+	port := os.Getenv("APP_PORT")
+	router := gin.Default()
+	api.ApplyRoutes(router)
+	router.Run(":" + port)
 }
